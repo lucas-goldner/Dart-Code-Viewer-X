@@ -2,6 +2,8 @@
 
 This package is an updated safety version of [dart_code_viewer2](https://pub.dev/packages/dart_code_viewer2), which is a package, that is the null safety version of [dart_code_viewer](https://pub.dev/packages/dart_code_viewer). I will try my best to keep this updated! Hopefully nobody needs to create a new fork of this package...
 
+Update: The original author reached out and updated the package. I will keep this fork, though in case we need a quick update.
+
 Join the discord for discussions about this package: [![](https://dcbadge.vercel.app/api/server/xC6wtbzZnP)](https://discord.gg/xC6wtbzZnP)
 
 # dart_code_viewer_x
