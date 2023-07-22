@@ -69,7 +69,9 @@ class DartCodeViewer extends StatelessWidget {
     this.stringStyle,
     this.backgroundColor,
     this.copyButtonText,
+    this.displayCopyNotification,
     this.showCopyButton,
+    this.copyButtonReplacement,
     this.height,
     this.width,
   }) : super(key: key);
@@ -94,6 +96,7 @@ class DartCodeViewer extends StatelessWidget {
     Color? backgroundColor,
     Text? copyButtonText,
     bool? showCopyButton,
+    bool? displayCopyNotification,
     double? height,
     double? width,
   }) {
@@ -110,6 +113,7 @@ class DartCodeViewer extends StatelessWidget {
       backgroundColor: backgroundColor,
       copyButtonText: copyButtonText,
       showCopyButton: showCopyButton,
+      displayCopyNotification: displayCopyNotification,
       height: height,
       width: width,
     );
@@ -290,6 +294,15 @@ class DartCodeViewer extends StatelessWidget {
   /// default the button is showing.
   final bool? showCopyButton;
 
+  /// When copying the code, you can decide wether to display a notification
+  /// that you copied your code or not. This only works when using [MaterialApp]!
+  /// By default, this is set to false.
+  final bool? displayCopyNotification;
+
+  /// This can be used to provide a custom copy button.
+  /// If its not set but the `copyButton` is set, then it will default to an elevated button.
+  final Widget? copyButtonReplacement;
+
   /// The height of the [DartCodeViewer] by default it uses the [MediaQuery.of(context).size.height]
   final double? height;
 
@@ -384,6 +397,8 @@ class DartCodeViewer extends StatelessWidget {
         width: dartCodeViewerThemeData.width,
         child: _DartCodeViewerPage(
           codifyString(data, dartCodeViewerThemeData),
+          displayCopyNotification ?? false,
+          copyButtonReplacement,
         ),
       ),
     );
@@ -453,8 +468,14 @@ class DartCodeViewer extends StatelessWidget {
 }
 
 class _DartCodeViewerPage extends StatelessWidget {
-  const _DartCodeViewerPage(this.code);
+  const _DartCodeViewerPage(
+    this.code,
+    this.displayCopyNotification,
+    this.copyButtonReplacement,
+  );
   final InlineSpan code;
+  final bool displayCopyNotification;
+  final Widget? copyButtonReplacement;
 
   @override
   Widget build(BuildContext context) {
@@ -462,6 +483,8 @@ class _DartCodeViewerPage extends StatelessWidget {
     final _plainTextCode = _richTextCode.toPlainText();
 
     void _showSnackBarOnCopySuccess(dynamic result) {
+      if (!displayCopyNotification) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Copied to Clipboard'),
@@ -470,6 +493,8 @@ class _DartCodeViewerPage extends StatelessWidget {
     }
 
     void _showSnackBarOnCopyFailure(Object exception) {
+      if (!displayCopyNotification) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failure to copy to clipboard: $exception'),
@@ -477,18 +502,25 @@ class _DartCodeViewerPage extends StatelessWidget {
       );
     }
 
+    Future<void> _copyToClipboard() async =>
+        await Clipboard.setData(ClipboardData(text: _plainTextCode))
+            .then(_showSnackBarOnCopySuccess)
+            .catchError(_showSnackBarOnCopyFailure);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (DartCodeViewerTheme.of(context).showCopyButton!)
-          ElevatedButton(
-            onPressed: () async {
-              await Clipboard.setData(ClipboardData(text: _plainTextCode))
-                  .then(_showSnackBarOnCopySuccess)
-                  .catchError(_showSnackBarOnCopyFailure);
-            },
-            child: DartCodeViewerTheme.of(context).copyButtonText,
-          ),
+          if (copyButtonReplacement != null)
+            GestureDetector(
+              child: copyButtonReplacement,
+              onTap: _copyToClipboard,
+            )
+          else
+            ElevatedButton(
+              onPressed: _copyToClipboard,
+              child: DartCodeViewerTheme.of(context).copyButtonText,
+            ),
         Expanded(
             child: SingleChildScrollView(
                 child: SelectableText.rich(
