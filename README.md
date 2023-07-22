@@ -2,7 +2,7 @@
 
 This package is an updated safety version of [dart_code_viewer2](https://pub.dev/packages/dart_code_viewer2), which is a package, that is the null safety version of [dart_code_viewer](https://pub.dev/packages/dart_code_viewer). I will try my best to keep this updated! Hopefully nobody needs to create a new fork of this package...
 
-Update: The original author reached out and updated the package. I will keep this fork, though in case we need a quick update.
+Update: The original author reached out and updated the package. I will keep this fork, though in case we need a quick update.\
 Update to the Update: We need to do some custom stuff especially for the implementation used in `fluttershow_base` so keep that in mind.
 
 Join the discord for discussions about this package: [![](https://dcbadge.vercel.app/api/server/xC6wtbzZnP)](https://discord.gg/xC6wtbzZnP)
@@ -10,6 +10,11 @@ Join the discord for discussions about this package: [![](https://dcbadge.vercel
 # dart_code_viewer_x
 
 The `dart_code_viewer_x` package for Flutter allows you to easily show and copy dart code in your Flutter application.
+
+Additional features in this package:
+
+- Decide wether to toggle notifications for copying code
+- Provide your own copy button instead of using the default ElevatedButton
 
 ## Getting Started
 
