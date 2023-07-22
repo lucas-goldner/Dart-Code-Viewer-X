@@ -69,6 +69,7 @@ class DartCodeViewer extends StatelessWidget {
     this.stringStyle,
     this.backgroundColor,
     this.copyButtonText,
+    this.displayNotification,
     this.showCopyButton,
     this.height,
     this.width,
@@ -94,6 +95,7 @@ class DartCodeViewer extends StatelessWidget {
     Color? backgroundColor,
     Text? copyButtonText,
     bool? showCopyButton,
+    bool? displayNotification,
     double? height,
     double? width,
   }) {
@@ -110,6 +112,7 @@ class DartCodeViewer extends StatelessWidget {
       backgroundColor: backgroundColor,
       copyButtonText: copyButtonText,
       showCopyButton: showCopyButton,
+      displayNotification: displayNotification,
       height: height,
       width: width,
     );
@@ -290,6 +293,11 @@ class DartCodeViewer extends StatelessWidget {
   /// default the button is showing.
   final bool? showCopyButton;
 
+  /// When copying the code, you can decide wether to display a notification
+  /// that you copied your code or not. This only works when using [MaterialApp]!
+  /// By default, this is set to false.
+  final bool? displayNotification;
+
   /// The height of the [DartCodeViewer] by default it uses the [MediaQuery.of(context).size.height]
   final double? height;
 
@@ -384,6 +392,7 @@ class DartCodeViewer extends StatelessWidget {
         width: dartCodeViewerThemeData.width,
         child: _DartCodeViewerPage(
           codifyString(data, dartCodeViewerThemeData),
+          displayNotification ?? false,
         ),
       ),
     );
@@ -453,8 +462,9 @@ class DartCodeViewer extends StatelessWidget {
 }
 
 class _DartCodeViewerPage extends StatelessWidget {
-  const _DartCodeViewerPage(this.code);
+  const _DartCodeViewerPage(this.code, this.displayNotification);
   final InlineSpan code;
+  final bool displayNotification;
 
   @override
   Widget build(BuildContext context) {
@@ -462,6 +472,8 @@ class _DartCodeViewerPage extends StatelessWidget {
     final _plainTextCode = _richTextCode.toPlainText();
 
     void _showSnackBarOnCopySuccess(dynamic result) {
+      if (!displayNotification) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Copied to Clipboard'),
@@ -470,6 +482,8 @@ class _DartCodeViewerPage extends StatelessWidget {
     }
 
     void _showSnackBarOnCopyFailure(Object exception) {
+      if (!displayNotification) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failure to copy to clipboard: $exception'),
