@@ -1,6 +1,6 @@
 # Dart Code Viewer X
 
-Get it from here:
+Get it from here: https://pub.dev/packages/dart_code_viewer_x
 
 ## Disclaimer
 
